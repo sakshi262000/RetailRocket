@@ -51,8 +51,7 @@ public class ProductService {
                     product.setDescription(updatedProduct.getDescription());
                     product.setPrice(updatedProduct.getPrice());
 
-                    Products savedProduct = productRepo.save(product);
-                    return new ResponseEntity<>(savedProduct, HttpStatus.OK);
+                    return new ResponseEntity<>(productRepo.save(product), HttpStatus.OK);
                 })
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

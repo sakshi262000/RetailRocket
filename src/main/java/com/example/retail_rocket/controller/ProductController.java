@@ -1,5 +1,6 @@
 package com.example.retail_rocket.controller;
 
+import com.example.retail_rocket.Utils.RandomValues;
 import com.example.retail_rocket.model.Products;
 import com.example.retail_rocket.repository.PaginationRepo;
 import com.example.retail_rocket.service.ProductService;
@@ -26,8 +27,9 @@ public class ProductController {
         return PaginationRepo.findAll(pageable);
     }
 
-    @PostMapping("/addproducts")
+    @PostMapping("/products")
     public ResponseEntity<Products> addProduct(@RequestBody Products product) {
+        product.setProductCode(RandomValues.generateRandomValues());
         return productService.addProduct(product);
     }
 
@@ -36,7 +38,7 @@ public class ProductController {
         return productService.updateProduct(id, updatedProduct); // Delegate to the service layer
     }
 
-    @DeleteMapping("deleteproduct/{id}")
+    @DeleteMapping("/product/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         return productService.deleteProduct(id); // Delegate to the service layer
     }
