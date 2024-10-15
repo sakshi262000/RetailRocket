@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -20,17 +21,17 @@ public class UserController {
     UserService service;
 
     @PostMapping("/register")
-    ResponseEntity<String> registerUser(@RequestBody Users userdata, HttpServletRequest request){
-        service.saveUsersRawData(userdata);
-        return new ResponseEntity("Session id: "+request.getSession().getId(),HttpStatus.ACCEPTED);
+    ResponseEntity<Users> registerUser(@RequestBody Users userdata, HttpServletRequest request){
+       return service.saveUsersRawData(userdata);
+       // return new ResponseEntity("Session id: "+request.getSession().getId(),HttpStatus.ACCEPTED);
     }
     @GetMapping("/users")
     ResponseEntity<ArrayList<Users>> getAllUsers(){
         return service.getAllUsers();
     }
     @PostMapping("/login")
-    ResponseEntity<String> userLogin(@RequestBody UserRequestDto userRequest, HttpServletRequest request){
-        return new ResponseEntity(service.verifyuser(userRequest)+" 😀 Session id: "+request.getSession().getId(),HttpStatus.OK);
+    Map<String,Object> userLogin(@RequestBody UserRequestDto userRequest, HttpServletRequest request){
+        return (Map<String, Object>) service.verifyuser(userRequest);
     }
     //This is for CSFR token 😎
     @GetMapping("/csrf-token")
