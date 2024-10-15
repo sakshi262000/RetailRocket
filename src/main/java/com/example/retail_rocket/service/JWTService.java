@@ -36,7 +36,7 @@ public class JWTService {
         Map<String,Object> claims = new HashMap<>();
         Map<String,Object> tokenInfo = new HashMap<>();
         long currentTimeInMillisSecond = System.currentTimeMillis();
-        long expirationTimeInMillisSecond = currentTimeInMillisSecond +60*60*30 ;
+        long expirationTimeInMillisSecond = currentTimeInMillisSecond + 60*60*30*100 ;
 
         String token =  Jwts.builder().claims().add(claims)
                 .subject(username)

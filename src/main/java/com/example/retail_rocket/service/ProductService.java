@@ -12,8 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -23,11 +25,9 @@ public class ProductService {
     @Autowired
     private ProductRepo productRepo;
 
-
     public List<Products> findAll() {
         List<Products> productList = new ArrayList<>();
         Iterable<Products> productsIterable = productRepo.findAll();
-
 
         for (Products product : productsIterable) {
             productList.add(product);
@@ -47,9 +47,15 @@ public class ProductService {
         return productRepo.findById(id)
                 .map(product -> {
 
-                    product.setName(updatedProduct.getName());
-                    product.setDescription(updatedProduct.getDescription());
-                    product.setPrice(updatedProduct.getPrice());
+                    Optional.ofNullable(updatedProduct.getName()).ifPresent(product::setName);
+                    Optional.ofNullable(updatedProduct.getDescription()).ifPresent(product::setDescription);
+                    Optional.ofNullable(updatedProduct.getCategory()).ifPresent(product::setCategory);
+                    Optional.ofNullable(updatedProduct.getStock())
+                            .filter(stock->stock.compareTo(0L)!=0)
+                            .ifPresent(product::setStock);
+                    Optional.ofNullable(updatedProduct.getPrice())
+                            .filter(price->price.compareTo(BigDecimal.ZERO)!=0)
+                            .ifPresent(product::setPrice);
 
                     return new ResponseEntity<>(productRepo.save(product), HttpStatus.OK);
                 })
@@ -64,6 +70,8 @@ public class ProductService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if product not found
         }
     }
-
+    public Products isProductIsAvailable(String productCode){
+        return productRepo.findByProductCode(productCode);
+    }
 
 }
