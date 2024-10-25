@@ -57,8 +57,8 @@ public class UserService {
                 userRequest.getUsername(),userRequest.getPassword()
         ));
         if(authentication.isAuthenticated()){
-
-            return jwtService.generateTokenForUser(userRequest.getUsername());
+            System.out.println("authentication roles: "+authentication.getAuthorities());
+            return jwtService.generateTokenForUser(userRequest.getUsername(),authentication);
         }
         else
             return Map.of("token", "failed");

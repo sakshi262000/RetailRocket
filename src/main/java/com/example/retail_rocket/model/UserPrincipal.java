@@ -10,13 +10,16 @@ import java.util.List;
 
 public class UserPrincipal implements UserDetails {
    private Users user;
+
    public UserPrincipal(Users user){
        this.user=user;
    }
    //Will tell the roles, one user can have multiple roles
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("USER"));
+       // GrantedAuthority authority = new SimpleGrantedAuthority(users.getType());
+      return Collections.singleton(new SimpleGrantedAuthority(user.getType()));
+        //return Collections.singleton(new SimpleGrantedAuthority("USER"));
     }
 
     @Override

@@ -20,3 +20,6 @@ spring:
       password: admin
 server:
   port: '8086'
+jwt:
+  secret:
+    key: 'BqwgfBrfGspp6/FiOHQD9fkiSbfTyDzERmx4xkW5Eug='

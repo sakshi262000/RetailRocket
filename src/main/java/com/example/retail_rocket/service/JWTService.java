@@ -4,37 +4,45 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JWTService {
+    @Value("${jwt.secret.key}")
     private String secretKey;
     private static final String TOKEN = "token";
     private static final String EXPIRATION = "expiration";
 
     public JWTService(){
-        try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey sk = keyGen.generateKey();
-            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        }catch (Exception ex){
-            throw new RuntimeException();
-        }
+        //As this was generating new secret key everytime,
+        // so whenever u restart the server the old token will be invalid
+//        try {
+//            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+//            SecretKey sk = keyGen.generateKey();
+//            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
+//            System.out.println("Secret key: "+secretKey);
+//        }catch (Exception ex){
+//            throw new RuntimeException();
+//        }
     }
 
-    public Map<String,Object> generateTokenForUser(String username) {
+    public Map<String,Object> generateTokenForUser(String username, Authentication authentication) {
         Map<String,Object> claims = new HashMap<>();
         Map<String,Object> tokenInfo = new HashMap<>();
+        claims.put("username",username);
+        claims.put("roles",authentication.getAuthorities().stream().collect(Collectors.toList()));
         long currentTimeInMillisSecond = System.currentTimeMillis();
         long expirationTimeInMillisSecond = currentTimeInMillisSecond + 60*60*30*100 ;
 
@@ -42,6 +50,7 @@ public class JWTService {
                 .subject(username)
                 .issuedAt(new Date(currentTimeInMillisSecond))
                 .expiration(new Date(expirationTimeInMillisSecond))
+
                 .and()
                 .signWith(getKey())
                 .compact();
