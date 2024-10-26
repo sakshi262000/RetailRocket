@@ -46,12 +46,6 @@ public class UserService {
     }
 
     public Map<String,Object> verifyuser(UserRequestDto userRequest) {
-/*Users abc = repo.getUserDetail(userRequest.getUsername(), userRequest.getPassword());
-        if(Objects.nonNull(abc)){
-           return new ResponseEntity("Sucess", HttpStatus.OK);
-        }else{
-           return new ResponseEntity("Failed", HttpStatus.NOT_FOUND);
-        }*/
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userRequest.getUsername(),userRequest.getPassword()

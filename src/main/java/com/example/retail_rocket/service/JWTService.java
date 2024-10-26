@@ -1,5 +1,6 @@
 package com.example.retail_rocket.service;
 
+import com.example.retail_rocket.ExceptionHandler.Tokenvalidation;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -54,16 +55,20 @@ public class JWTService {
                 .and()
                 .signWith(getKey())
                 .compact();
-          tokenInfo.put(TOKEN,token);
-          tokenInfo.put(EXPIRATION,expirationTimeInMillisSecond);
-          return tokenInfo;
+        tokenInfo.put(TOKEN,token);
+        tokenInfo.put(EXPIRATION,expirationTimeInMillisSecond);
+        return tokenInfo;
     }
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith(getKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        }catch (Exception exception){
+            throw new Tokenvalidation("Token is not validated");
+        }
     }
     private SecretKey getKey(){
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -76,12 +81,21 @@ public class JWTService {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
+        System.out.println("Inside validate filter--------------");
         final String username = extractuserName(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        if( username.equals(userDetails.getUsername())) {
+            if (!isTokenExpired(token))
+                return true;
+            else
+                throw new Tokenvalidation("Token expired");
+        }
+        else
+            throw new Tokenvalidation("User not found");
 
     }
 
     private boolean isTokenExpired(String token) {
+
         return extractExpiration(token).before(new Date());
     }
 
