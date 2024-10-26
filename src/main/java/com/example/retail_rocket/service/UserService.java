@@ -1,5 +1,6 @@
 package com.example.retail_rocket.service;
 
+import com.example.retail_rocket.Utils.RandomValues;
 import com.example.retail_rocket.dto.UserRequestDto;
 import com.example.retail_rocket.model.Users;
 import com.example.retail_rocket.repository.UsersRepo;
@@ -33,6 +34,7 @@ public class UserService {
     public ResponseEntity<Users> saveUsersRawData(Users user){
     //    user.setType("general");
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setCustomerid(RandomValues.generateRandomHex());
        return new ResponseEntity(repo.save(user), HttpStatus.ACCEPTED);
         //return new ResponseEntity(HttpStatus.ACCEPTED);
     }

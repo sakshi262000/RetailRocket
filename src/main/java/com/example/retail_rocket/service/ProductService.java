@@ -36,13 +36,13 @@ public class ProductService {
         return productList;
     }
 
-    // Method to add a new product
+
     public ResponseEntity<Products> addProduct(Products product) {
         Products savedProduct = productRepo.save(product);
         return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
 
-    // Method to update product details
+
     public ResponseEntity<Products> updateProduct(Long id, Products updatedProduct) {
         return productRepo.findById(id)
                 .map(product -> {
