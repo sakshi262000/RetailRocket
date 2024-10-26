@@ -1,5 +1,6 @@
 package com.example.retail_rocket.service;
 
+import com.example.retail_rocket.ExceptionHandler.OrderNotFound;
 import com.example.retail_rocket.model.Orders;
 import com.example.retail_rocket.model.Products;
 import com.example.retail_rocket.repository.OrdersRepository;
@@ -21,15 +22,16 @@ public class OrdersService {
 
         if(product!=null)
         {
-            if(product.getStock()>=1 &&orders.getNumberOfItems()<=product.getStock()) {
+            if(orders.getNumberOfItems()<=product.getStock()) {
                 ordersRepository.save(orders);
-                if (product.getStock() == 1)
-                    productService.deleteProduct(product.getId());
-                else {
-                    product.setStock(product.getStock() - 1);
-                    productService.updateProduct(product.getId(), product);
-                }
+                product.setStock(product.getStock() - orders.getNumberOfItems());
+                productService.updateProduct(product.getId(), product);
+
+            }else {
+                throw new OrderNotFound("Order NOt avalable");
             }
+        }else {
+throw new OrderNotFound("Order NOt avalable");
         }
         return null;
     }

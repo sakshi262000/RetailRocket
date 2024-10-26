@@ -3,6 +3,7 @@ package com.example.retail_rocket.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -35,10 +36,16 @@ public class SecurityConfig  {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
-
+        return http
+                .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
                 .authorizeHttpRequests(request-> request
                         //dont check credntial for this api
+                        .requestMatchers("api/users").hasAuthority("admin")
+                        .requestMatchers("api/products/*").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.POST,"api/products").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.GET,"api/orders").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.PUT,"api/orders/**").hasAuthority("admin")
+
                         .requestMatchers("api/login","api/register")
                         .permitAll()
 
@@ -50,11 +57,11 @@ public class SecurityConfig  {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
                 //Now the statless sesson, means create new session id everytime
-                .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+                .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .build();
 
         //This will simply disable all security filters
-        return http.build();
+        // return http.build();
     }
    /* @Bean
     public UserDetailsService userDetailsService(){
