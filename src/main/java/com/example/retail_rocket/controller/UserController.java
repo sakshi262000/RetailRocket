@@ -5,13 +5,11 @@ import com.example.retail_rocket.model.Users;
 import com.example.retail_rocket.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,9 +19,8 @@ public class UserController {
     UserService service;
 
     @PostMapping("/register")
-    ResponseEntity<Users> registerUser(@RequestBody Users userdata, HttpServletRequest request){
+    ResponseEntity<Users> registerUser(@RequestBody Users userdata){
        return service.saveUsersRawData(userdata);
-       // return new ResponseEntity("Session id: "+request.getSession().getId(),HttpStatus.ACCEPTED);
     }
     @GetMapping("/users")
     ResponseEntity<ArrayList<Users>> getAllUsers(){

@@ -1,5 +1,6 @@
 package com.example.retail_rocket.service;
 
+import com.example.retail_rocket.ExceptionHandler.ExceptionOccured;
 import com.example.retail_rocket.dto.UserRequestDto;
 import com.example.retail_rocket.model.Users;
 import com.example.retail_rocket.repository.UsersRepo;
@@ -9,14 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -32,6 +29,9 @@ public class UserService {
 
     public ResponseEntity<Users> saveUsersRawData(Users user){
     //    user.setType("general");
+        Users users = repo.findByUsername(user.getUsername());
+        if(users!=null)
+            throw new ExceptionOccured("User Already exists");
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
        return new ResponseEntity(repo.save(user), HttpStatus.ACCEPTED);
         //return new ResponseEntity(HttpStatus.ACCEPTED);
