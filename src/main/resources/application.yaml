@@ -20,12 +20,13 @@ spring:
       password: admin
 server:
   port: '8086'
-logging:
-  level:
-    root: INFO
 com:
   example:
     retail_rocket: DEBUG
 jwt:
   secret:
     key: 'BqwgfBrfGspp6/FiOHQD9fkiSbfTyDzERmx4xkW5Eug='
+logging:
+  level:
+    root: info
+    com.example.retail_rocket: debug

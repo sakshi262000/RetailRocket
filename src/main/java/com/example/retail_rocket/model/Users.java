@@ -21,5 +21,6 @@ public class Users {
     private String lastName;
     private String otp;
     private String localAddress;
+    private String customerid;
    // private LocalTime createdAt;
 }

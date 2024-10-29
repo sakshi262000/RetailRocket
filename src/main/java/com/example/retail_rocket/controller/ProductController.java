@@ -32,12 +32,12 @@ public class ProductController {
 
     @PutMapping("/products/{id}")
     public ResponseEntity<Products> updateProduct(@PathVariable Long id, @RequestBody Products updatedProduct) {
-        return productService.updateProduct(id, updatedProduct); // Delegate to the service layer
+        return productService.updateProduct(id, updatedProduct);
     }
 
     @DeleteMapping("/product/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        return productService.deleteProduct(id); // Delegate to the service layer
+        return productService.deleteProduct(id);
     }
 
 
