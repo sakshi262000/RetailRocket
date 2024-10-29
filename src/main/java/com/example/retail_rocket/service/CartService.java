@@ -1,57 +1,66 @@
 package com.example.retail_rocket.service;
 
+import com.example.retail_rocket.ExceptionHandler.ResourceNotFoundException;
 import com.example.retail_rocket.model.Cart;
 import com.example.retail_rocket.repository.CartRepo;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class CartService {
-    CartRepo CartRepo;
-    public ResponseEntity<Cart> additems(Cart Cart)
-    {
-        return new ResponseEntity<>(CartRepo.save(Cart),HttpStatus.CREATED);
+
+@Autowired
+    public CartRepo cartRepo;
+
+    @Autowired
+    private ProductService productService;
+    public Cart addProductToCart(Cart cart) {
+        cart.calculateTotalAmount();
+        return cartRepo.save(cart);
     }
 
-    public ResponseEntity<ArrayList<Cart>> getAll()
-    {
-        ArrayList<Cart> cart=new ArrayList<>();
-        for (Cart CartItem : CartRepo.findAll()) {
-            cart.add(CartItem);
-        }
-        return new ResponseEntity<>(cart,HttpStatus.OK);
-    }
-   public ResponseEntity<Void> deletebyid(Long id)
-    {
-        if(CartRepo.existsById(id))
-        {
-            CartRepo.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public List<Cart> getCartItemsByCustomerId(String customerId) {
+        return (List<Cart>) cartRepo.findByCustomerId(customerId);
     }
 
-    public ResponseEntity<Cart>updateById(Long Id,Cart cart)
-    {
-        return CartRepo.findById(Id)
-                .map(cartobj->
-                {
-                    Optional.ofNullable(cart.getProductcode()).ifPresent(cartobj::setProductcode);
-                    Optional.ofNullable(cart.getCustomerid()).ifPresent(cartobj::setCustomerid);
-                    Optional.ofNullable(cart.getProductname()).ifPresent(cartobj::setProductname);
-                    Optional.ofNullable(cart.getAmount()).ifPresent(cartobj::setAmount);
-                    Optional.ofNullable(cart.getQuantity()).ifPresent(cartobj::setQuantity);
-                    Optional.ofNullable(cart.getQuantity()).ifPresent(cartobj::setQuantity);
-                    Optional.ofNullable(cart.getUpdatedAt()).ifPresent(cartobj::setUpdatedAt);
-                    return new ResponseEntity<>(CartRepo.save(cartobj),HttpStatus.OK);
-                })
-                .orElse( new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public void removeProductFromCart(String customerId, String productCode) {
+        List<Cart> cartItems = cartRepo.findByCustomerIdAndProductCode(customerId, productCode);
+
+        if (cartItems.isEmpty()) {
+            throw new ResourceNotFoundException("Cart item not found for customer ID: " + customerId + " and product code: " + productCode);
+        }
+
+        Cart cartItem = cartItems.get(0);
+        cartRepo.delete(cartItem);
     }
 
+    public Cart updateProductQuantity(String customerId, String productCode) {
+        List<Cart> cartItems = cartRepo.findByCustomerIdAndProductCode(customerId, productCode);
+
+        if (cartItems.isEmpty()) {
+            throw new ResourceNotFoundException("Cart item not found for customer ID: " + customerId + " and product code: " + productCode);
+        }
+
+        Cart cartItem = cartItems.get(0);
+        String currentQuantityStr = cartItem.getQuantity();
+        int currentQuantity = (currentQuantityStr == null || currentQuantityStr.isEmpty()) ? 0 : Integer.parseInt(currentQuantityStr);
+        currentQuantity += 1;
+
+        cartItem.setQuantity(String.valueOf(currentQuantity));
+        cartItem.setTotalAmount((calculateTotalAmount(cartItem).toString()));
+        return cartRepo.save(cartItem);
+    }
+
+
+    public Cart updateCartItem(Cart cart) {
+    return cartRepo.save(cart);
+}
+    public BigDecimal calculateTotalAmount(Cart cartItem) {
+        BigDecimal price = productService.getProductPrice(cartItem.getProductCode());
+        BigDecimal quantity = new BigDecimal(cartItem.getQuantity());
+        return price.multiply(quantity);
+    }
 }

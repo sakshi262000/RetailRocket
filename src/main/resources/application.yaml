@@ -23,3 +23,7 @@ server:
 jwt:
   secret:
     key: 'BqwgfBrfGspp6/FiOHQD9fkiSbfTyDzERmx4xkW5Eug='
+logging:
+  level:
+    root: info
+    com.example.retail_rocket: debug
