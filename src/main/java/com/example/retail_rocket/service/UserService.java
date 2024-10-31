@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -34,7 +35,8 @@ public class UserService {
         if(users!=null)
             throw new ExceptionOccured("User Already exists");
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setCustomerid(RandomValues.generateRandomHex());
+//        user.setCustomerid(RandomValues.generateRandomHex());
+        user.setCustomerid(UUID.randomUUID().toString());
        return new ResponseEntity(repo.save(user), HttpStatus.ACCEPTED);
         //return new ResponseEntity(HttpStatus.ACCEPTED);
     }
