@@ -18,7 +18,6 @@ public class CartService {
     @Autowired
     private ProductService productService;
     public Cart addProductToCart(Cart cart) {
-        cart.calculateTotalAmount();
         return cartRepo.save(cart);
     }
 
@@ -50,7 +49,6 @@ public class CartService {
         currentQuantity += 1;
 
         cartItem.setQuantity(String.valueOf(currentQuantity));
-        cartItem.setTotalAmount((calculateTotalAmount(cartItem).toString()));
         return cartRepo.save(cartItem);
     }
 

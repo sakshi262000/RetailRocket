@@ -19,10 +19,8 @@ public class Cart {
 
     private String customerId;
     private String productCode;
-    private String productName;
     private String quantity;
-    private String price;
-    private String totalAmount;
+
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp updatedAt;
@@ -31,9 +29,5 @@ public class Cart {
         this.updatedAt = Timestamp.from(java.time.Instant.now());
     }
 
-    public void calculateTotalAmount() {
-        BigDecimal unitPrice = new BigDecimal(price);
-        BigDecimal total = unitPrice.multiply(new BigDecimal(quantity));
-        this.totalAmount = total.toString();
-    }
+
 }

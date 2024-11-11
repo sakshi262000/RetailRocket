@@ -36,13 +36,11 @@ public class CartController {
             int currentQuantity = Integer.parseInt(existingCartItem.getQuantity());
             currentQuantity += 1;
             existingCartItem.setQuantity(String.valueOf(currentQuantity));
-            existingCartItem.setTotalAmount(cartService.calculateTotalAmount(existingCartItem).toString());
             Cart updatedCart = cartService.updateCartItem(existingCartItem);
             logger.info("Updated existing cart item: {}", updatedCart);
             return new ResponseEntity<>(updatedCart, HttpStatus.OK);
         } else {
-            // If the product does not exist, create a new cart item
-            cart.calculateTotalAmount();
+
             Cart savedCart = cartService.addProductToCart(cart);
             logger.info("Added new cart item: {}", savedCart);
             return new ResponseEntity<>(savedCart, HttpStatus.CREATED);
@@ -72,10 +70,5 @@ public class CartController {
     }
 
 
-    private String calculateTotalAmount(Cart cart) {
-        // Assuming you have a method to get product price by product code
-        BigDecimal price = productService.getProductPrice(cart.getProductCode());
-        BigDecimal quantity = new BigDecimal(cart.getQuantity());
-        return price.multiply(quantity).toString();
-    }
+
 }
