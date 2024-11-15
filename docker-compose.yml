@@ -1,0 +1,7 @@
+services:
+  retail-rocket:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8086"
+version: "3.7"

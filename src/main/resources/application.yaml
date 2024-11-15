@@ -2,6 +2,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
+#    for docker use below url jdbc url, not working
+   # url: jdbc:postgresql://host.docker.internal:5446/retail-rocket
     url: jdbc:postgresql://localhost:5446/retail-rocket
     password: admin
     properties:
@@ -14,5 +16,19 @@ spring:
       ddl-auto: update
   application:
     name: retail-rocket
+  security:
+    user:
+      name: user
+      password: admin
 server:
   port: '8086'
+com:
+  example:
+    retail_rocket: DEBUG
+jwt:
+  secret:
+    key: 'BqwgfBrfGspp6/FiOHQD9fkiSbfTyDzERmx4xkW5Eug='
+logging:
+  level:
+    root: info
+    com.example.retail_rocket: debug
